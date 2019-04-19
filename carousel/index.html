@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{margin: 0;padding: 0;}
+			div{width: 850px;height: 500px;overflow: hidden;margin: 50px auto;position: relative; }
+			li{list-style: none;}
+			ul{width: 4250px;height: 500px;position: absolute;left: 0;right: 0;transition: left 1s;}
+			ul li{width: 850px;height: 500px;float: left;}
+			ol li{float: left;margin-right:20px ;}
+			.ac a{background: red;color: #fff;}
+			ol li a{float: left;width: 25px;height: 25px;line-height:25px;border-radius:50%;background: #fff;text-align: center;text-decoration: none;color: #000000;}
+			ol{position: absolute;bottom:10px;right: 0px;}
+			#box>a{text-decoration: none;position: absolute;top: 50%;margin-top: -10px;height: 40px;line-height: 32px;text-align: center;width: 40px;font-size: 40px;vertical-align: middle;color: #fff;background: rgba(0,0,0,0.7);z-index:6;}
+			#goPrev{left: 0;}
+			#goNext{right: 0;}
+			img{width:850px; height:500px;}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<ul>
+				<li><a href="javascript:alert(0);"><img src="1.jpg"/></a></li>
+				<li><a href="javascript:alert(1);"><img src="2.jpg"/></a></li>
+				<li><a href="javascript:alert(2);"><img src="3.jpg"/></a></li>
+				<li><a href="javascript:alert(3);"><img src="4.jpg"/></a></li>
+				<li><a href="javascript:alert(4);"><img src="5.jpg"/></a></li>
+			</ul>
+			<ol>
+				<li class="ac"><a href="javascript:;">1</a></li>
+				<li><a href="javascript:;">2</a></li>
+				<li><a href="javascript:;">3</a></li>
+				<li><a href="javascript:;">4</a></li>
+				<li><a href="javascript:;">5</a></li>
+			</ol>
+			<a href="javascript:;" id="goPrev">&laquo;</a>
+    		<a href="javascript:;" id="goNext">&raquo;</a>
+		</div>
+		<script type="text/javascript">
+			class Lbt {
+				constructor (selector) {
+					this.container = document.querySelector(selector);
+					this.ul = this.container.querySelector("ul");
+					this.ol = this.container.querySelector("ol");
+					this.aImg = this.ul.querySelectorAll("li");
+					this.aBtn = Array.from(this.ol.querySelectorAll("a"));
+					this.goPrev = document.querySelector("#goPrev");
+					this.goNext = document.querySelector("#goNext");
+					this.index = 0;//记录当前处于第几张图
+					this.lastIndex = 0;//上一个index
+					this.bindEvents();
+					this.interval();
+				}
+				bindEvents(){
+					//给下标按钮绑事件
+					this.aBtn.forEach((btn)=>{
+						btn.onclick = () =>{
+							this.index = btn.innerHTML - 1;
+							this.change();
+						}
+					})
+					//后一张
+					this.goNext.onclick = () =>{
+						if(++this.index > this.aBtn.length - 1) this.index = 0;
+						this.change();
+					}
+					//前一张
+					this.goPrev.onclick = () =>{
+						if(--this.index < 0) this.index = this.aBtn.length - 1;
+						this.change();
+					}
+					//鼠标移入时清除定时器
+					this.container.onmouseenter = () =>{
+						clearInterval(this.timer);
+					}
+					//鼠标离开时重启定时器
+					this.container.onmouseleave = () =>{
+						this.timer = setInterval(() =>{
+							this.goNext.onclick();
+						},3000)
+					}
+				}
+				change(){
+						this.aBtn[this.lastIndex].parentElement.classList.remove("ac");
+						this.aBtn[this.index].parentElement.classList.add("ac");
+						//每个图片宽度相等，当按按钮时，改变相应倍数的一个图片宽度
+						this.ul.style.left = -850 * this.index + "px";
+						this.lastIndex = this.index;
+				}
+				interval(){
+					this.timer = setInterval(() =>{
+						this.goNext.onclick();
+					},3000)
+				}
+			}
+			new Lbt("#box");
+		</script>
+	</body>
+</html>
